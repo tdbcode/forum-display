@@ -1,12 +1,32 @@
+<<<<<<< HEAD
 import './App.css';
 import React, {useEffect, useState} from 'react';
 import AWS from 'aws-sdk';
+=======
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import "@aws-amplify/ui-react/styles.css";
+import { API } from "aws-amplify";
+import {
+  Button,
+  Flex,
+  Heading,
+  Text,
+  TextField,
+  View,
+  withAuthenticator,
+} from "@aws-amplify/ui-react";
+import { listNotes } from "./graphql/queries";
+import {
+  createNote as createNoteMutation,
+  deleteNote as deleteNoteMutation,
+} from "./graphql/mutations";
+>>>>>>> 7ff5918b2cb017ec997b68f6c39a63053bc5868c
 
-function App() {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const App = ({ signOut }) => {
+  const [notes, setNotes] = useState([]);
 
+<<<<<<< HEAD
   const AWS = require('aws-sdk');
 
   AWS.config.update({
@@ -41,32 +61,91 @@ docClient.put(params, (err, data) => {
     console.error('Error adding item to DynamoDB:', err);
   } else {
     console.log('Item added successfully:', data);
+=======
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  async function fetchNotes() {
+    const apiData = await API.graphql({ query: listNotes });
+    const notesFromAPI = apiData.data.listNotes.items;
+    setNotes(notesFromAPI);
+>>>>>>> 7ff5918b2cb017ec997b68f6c39a63053bc5868c
   }
 });
 
+  async function createNote(event) {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    const data = {
+      name: form.get("name"),
+      description: form.get("description"),
+    };
+    await API.graphql({
+      query: createNoteMutation,
+      variables: { input: data },
+    });
+    fetchNotes();
+    event.target.reset();
+  }
+
+  async function deleteNote({ id }) {
+    const newNotes = notes.filter((note) => note.id !== id);
+    setNotes(newNotes);
+    await API.graphql({
+      query: deleteNoteMutation,
+      variables: { input: { id } },
+    });
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>TDB Forum</h1>
-      </header>
-      <div className="App-main">
-        <p>Please Login!</p>
-
-        <form className="App-login-form" onSubmit={handleLogin}>
-          <div><label htmlFor="username" className="App-login-form-label">Username: </label>
-            <input type="text" id="username" className="App-login-form-input" onChange={((u) => setUsername(u.target.value))}/>
-          </div>
-          <div>
-            <label htmlFor="password" className="App-login-form-label">Password: </label>
-            <input type="text" id="password" className="App-login-form-input" onChange={((p) => setPassword(p.target.value))}/>
-          </div>
-          <input type="submit" value="Submit"/>
-
-        </form>
-      </div>
-    </div>  
+    <View className="App">
+      <Heading level={1}>My Notes App</Heading>
+      <View as="form" margin="3rem 0" onSubmit={createNote}>
+        <Flex direction="row" justifyContent="center">
+          <TextField
+            name="name"
+            placeholder="Note Name"
+            label="Note Name"
+            labelHidden
+            variation="quiet"
+            required
+          />
+          <TextField
+            name="description"
+            placeholder="Note Description"
+            label="Note Description"
+            labelHidden
+            variation="quiet"
+            required
+          />
+          <Button type="submit" variation="primary">
+            Create Note
+          </Button>
+        </Flex>
+      </View>
+      <Heading level={2}>Current Notes</Heading>
+      <View margin="3rem 0">
+        {notes.map((note) => (
+          <Flex
+            key={note.id || note.name}
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <Text as="strong" fontWeight={700}>
+              {note.name}
+            </Text>
+            <Text as="span">{note.description}</Text>
+            <Button variation="link" onClick={() => deleteNote(note)}>
+              Delete note
+            </Button>
+          </Flex>
+        ))}
+      </View>
+      <Button onClick={signOut}>Sign Out</Button>
+    </View>
   );
-}
+};
 
-export default App;
+export default withAuthenticator(App);
