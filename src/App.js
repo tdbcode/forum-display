@@ -30,6 +30,7 @@ function App() {
       ProjectionExpression: 'username, password, email',
     };
 
+    // Source: https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-example-query-scan.html
      ddb.query(params, (err, data) => {
       if (err) {
         console.error('Error querying database', err);
@@ -39,7 +40,9 @@ function App() {
         }
         else{
           const user = data.Items[0];
-          console.log(data.Items[0]);
+          console.log(data.Items[0]["password"]);
+          console.log(password);
+          console.log(user.password.string);
           if (user.password === password){
             console.log('Matching user', data.Items[0]);
             setLoginData(data.Items[0]);
