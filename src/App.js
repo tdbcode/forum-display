@@ -1,20 +1,45 @@
 import './App.css';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AWS from 'aws-sdk';
 
 function App(){
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loginData, setLoginData] = useState(null);
+
+  useEffect(() => {
+    const accessDocClient = new AWS.DynamoDB.DocumentClient();
+
+    const params = {
+      TableName: 'forum-users',
+      KeyConditionExpression: '#un = :user',
+      ExpressionAttributeNames: {
+        '#un': 'username',
+      },
+      ExmpressionAttributeValues: {
+        ':user': username,
+      },
+      };
+
+      accessDocClient.query(params, (err,data) => {
+        if (err){
+          console.error('Error querying database', err);
+        } else{
+          setLoginData(data.Items.length > 0 ? data.ITems[0] : null);
+        }
+      });
+
+    }, [username]);
    
   AWS.config.update({
-    accessKeyId: 'YOUR_ACCESS_KEY',
-    secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
-    region: 'us-east-2', // Replace with your desired AWS region
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+    region: 'us-east-2',
   });
 
   const handleLogin = (e) =>{
     e.preventDefault();
-    if ((username === "test") && (password === "test")){
+    if ((loginData) && (loginData.password === password)){
       console.log("logged in");
     }
     else{
@@ -24,7 +49,7 @@ function App(){
 
   return (
     <div className="App">
-      <header>
+      <header className="App-header">
         <h1>Welcome to TDB Forum</h1>
       </header>
       <main className="App-main">
