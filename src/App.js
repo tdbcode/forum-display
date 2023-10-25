@@ -1,22 +1,48 @@
 import './App.css';
-import React, {useState} from 'react';
-import { API } from "aws-amplify";
-import { createLogin } from '.graphq1/mutations';
+import React, {useEffect, useState} from 'react';
+import AWS from 'aws-sdk';
 
 function App() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const AWS = require('aws-sdk');
+
+  AWS.config.update({
+    accessKeyId: 'YOUR_ACCESS_KEY',
+    secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
+    region: 'us-east-2', // Replace with your desired AWS region
+  });
+
   const handleLogin = (e) =>{
     e.preventDefault();
-    if ((username == "test") && (password =="test")){
+    if ((username === "test") && (password === "test")){
       console.log("logged in");
     }
     else{
       console.log("login error")
     }
+  };
+
+  const docClient = new AWS.DynamoDB.DocumentClient();
+
+const params = {
+  TableName: 'YourTableName',
+  Item: {
+    ID: 1,
+    Name: 'John Doe',
+    Email: 'johndoe@example.com',
+  },
+};
+
+docClient.put(params, (err, data) => {
+  if (err) {
+    console.error('Error adding item to DynamoDB:', err);
+  } else {
+    console.log('Item added successfully:', data);
   }
+});
 
 
   return (
