@@ -1,34 +1,11 @@
-<<<<<<< HEAD
 import './App.css';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import AWS from 'aws-sdk';
-=======
-import React, { useState, useEffect } from "react";
-import "./App.css";
-import "@aws-amplify/ui-react/styles.css";
-import { API } from "aws-amplify";
-import {
-  Button,
-  Flex,
-  Heading,
-  Text,
-  TextField,
-  View,
-  withAuthenticator,
-} from "@aws-amplify/ui-react";
-import { listNotes } from "./graphql/queries";
-import {
-  createNote as createNoteMutation,
-  deleteNote as deleteNoteMutation,
-} from "./graphql/mutations";
->>>>>>> 7ff5918b2cb017ec997b68f6c39a63053bc5868c
 
-const App = ({ signOut }) => {
-  const [notes, setNotes] = useState([]);
-
-<<<<<<< HEAD
-  const AWS = require('aws-sdk');
-
+function App(){
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+   
   AWS.config.update({
     accessKeyId: 'YOUR_ACCESS_KEY',
     secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
@@ -45,107 +22,35 @@ const App = ({ signOut }) => {
     }
   };
 
-  const docClient = new AWS.DynamoDB.DocumentClient();
-
-const params = {
-  TableName: 'YourTableName',
-  Item: {
-    ID: 1,
-    Name: 'John Doe',
-    Email: 'johndoe@example.com',
-  },
-};
-
-docClient.put(params, (err, data) => {
-  if (err) {
-    console.error('Error adding item to DynamoDB:', err);
-  } else {
-    console.log('Item added successfully:', data);
-=======
-  useEffect(() => {
-    fetchNotes();
-  }, []);
-
-  async function fetchNotes() {
-    const apiData = await API.graphql({ query: listNotes });
-    const notesFromAPI = apiData.data.listNotes.items;
-    setNotes(notesFromAPI);
->>>>>>> 7ff5918b2cb017ec997b68f6c39a63053bc5868c
-  }
-});
-
-  async function createNote(event) {
-    event.preventDefault();
-    const form = new FormData(event.target);
-    const data = {
-      name: form.get("name"),
-      description: form.get("description"),
-    };
-    await API.graphql({
-      query: createNoteMutation,
-      variables: { input: data },
-    });
-    fetchNotes();
-    event.target.reset();
-  }
-
-  async function deleteNote({ id }) {
-    const newNotes = notes.filter((note) => note.id !== id);
-    setNotes(newNotes);
-    await API.graphql({
-      query: deleteNoteMutation,
-      variables: { input: { id } },
-    });
-  }
-
   return (
-    <View className="App">
-      <Heading level={1}>My Notes App</Heading>
-      <View as="form" margin="3rem 0" onSubmit={createNote}>
-        <Flex direction="row" justifyContent="center">
-          <TextField
-            name="name"
-            placeholder="Note Name"
-            label="Note Name"
-            labelHidden
-            variation="quiet"
-            required
+    <div className="App">
+      <header>
+        <h1>Welcome to TDB Forum</h1>
+      </header>
+      <main className="App-main">
+        <form className="App-form" onSubmit={handleLogin}>
+          <input 
+            className="App-form-input" 
+            id="username"
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(u) => setUsername(u.target.value)}
           />
-          <TextField
-            name="description"
-            placeholder="Note Description"
-            label="Note Description"
-            labelHidden
-            variation="quiet"
-            required
+          <input 
+            className="App-form-input" 
+            id="password"
+            type="text"
+            placeholder="Password"
+            value={password}
+            onChange={(p) => setPassword(p.target.value)}
           />
-          <Button type="submit" variation="primary">
-            Create Note
-          </Button>
-        </Flex>
-      </View>
-      <Heading level={2}>Current Notes</Heading>
-      <View margin="3rem 0">
-        {notes.map((note) => (
-          <Flex
-            key={note.id || note.name}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Text as="strong" fontWeight={700}>
-              {note.name}
-            </Text>
-            <Text as="span">{note.description}</Text>
-            <Button variation="link" onClick={() => deleteNote(note)}>
-              Delete note
-            </Button>
-          </Flex>
-        ))}
-      </View>
-      <Button onClick={signOut}>Sign Out</Button>
-    </View>
+          <input type="submit" className="App-form-button" value="Submit" />
+        </form>
+      </main>
+    </div>
+
   );
 };
 
-export default withAuthenticator(App);
+export default App;

@@ -3,17 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-amplify/ui-react": "^5.3.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-<<<<<<< HEAD
     "aws-sdk": "^2.1480.0",
-=======
-    "aws-amplify": "^5.3.11",
-    "graphql": "^16.8.1",
-    "ra-data-graphql": "^4.14.3",
->>>>>>> 7ff5918b2cb017ec997b68f6c39a63053bc5868c
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
