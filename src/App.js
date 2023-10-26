@@ -7,11 +7,10 @@ function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginData, setLoginData] = useState(null);
+  const [loginError, setLoginError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
-
-    var AWS = require('aws-sdk');
 
     AWS.config.update({
       accessKeyId: AWS_ACCESS_KEY_ID,
@@ -34,31 +33,28 @@ function App() {
      ddb.query(params, (err, data) => {
       if (err) {
         console.error('Error querying database', err);
+        setLoginError('Database Error. Please try again later.')
       } else {
         if (data.Items.length === 0){
-          console.log('No matching user found');
+          setLoginError('No user found');
         }
         else{
-          const user = data.Items[0];
-          console.log(data.Items[0]["password"]);
-          console.log(password);
-          console.log(user.password.string);
-          if (user.password === password){
-            console.log('Matching user', data.Items[0]);
-            setLoginData(data.Items[0]);
+          // Source: https://stackoverflow.com/questions/51460982/what-is-the-recommended-way-to-remove-data-type-descriptors-from-a-dynamodb-resp
+          var marshalled = AWS.DynamoDB.Converter.unmarshall(data.Items[0]); // Uses Dynamo's library to format data to JS equivalent
+          // console.log(data.Items); // for testing only
+          // console.log(marshalled); // for testing only
+          if (marshalled.password === password){
+            console.log('Matching user', username);
+            setLoginData(marshalled);
+            setLoginError('')
           }
           else {
             console.log("Incorrect password");
+            setLoginError('Incorrect Password')
           }
         }
       }
     });
-
-    /*if (loginData && loginData.password === password) {
-      console.log("logged in");
-    } else {
-      console.log("login error");
-    }*/
   };
 
   return (
@@ -85,6 +81,7 @@ function App() {
             onChange={(p) => setPassword(p.target.value)}
           />
           <input type="submit" className="App-form-button" value="Submit" />
+          <div id="feedback">{loginError}</div>
         </form>
       </main>
     </div>
