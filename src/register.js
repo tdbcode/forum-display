@@ -92,9 +92,7 @@ function Register() {
 
             // console.log('Username exists:', userExists); // for testing only
             // console.log('Email exists:', emailExists); // for testing only
-            var canRegister;
             if(!userExists && !emailExists){
-                canRegister = true;
                 setregisterError('');
                 registerUser();
                 localStorage.setItem("user", username);

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import * as AWS from 'aws-sdk';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from "./context/AuthProvider";
 
 function Login() {
+  const { setAuth } = useContext(AuthContext);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -43,8 +45,11 @@ function Login() {
           if (marshalled.password === password){
             console.log('Matching user', username);
             localStorage.setItem("user", username);
+            setAuth({ username });
             setLoginError('')
-            window.location.href = '/';
+
+            // idea: https://www.youtube.com/watch?v=X3qyxo_UTR4&ab_channel=DaveGray
+            navigate('/');
           }
           else {
             // If password doesn't match, inform user
