@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import * as AWS from 'aws-sdk';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault(); //Prevent full refresh
@@ -42,7 +44,7 @@ function Login() {
             console.log('Matching user', username);
             localStorage.setItem("user", username);
             setLoginError('')
-            window.location.href = '/Dashboard';
+            window.location.href = '/';
           }
           else {
             // If password doesn't match, inform user
@@ -55,7 +57,7 @@ function Login() {
   };
 
   const handleRegister = ((e) => {
-    window.location.href = '/Register';
+    navigate('/Register');
   });
 
   return (
@@ -73,7 +75,7 @@ function Login() {
           <input
             className="App-form-input"
             id="password"
-            type="password" // Password input type
+            type="password" 
             placeholder="Password"
             value={password}
             onChange={(p) => setPassword(p.target.value)}
